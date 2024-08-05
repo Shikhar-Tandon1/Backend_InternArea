@@ -15,3 +15,5 @@ router.post("/",async (req,res)=>{
         console.log(error,"not able to post the data")
     })
 })
+
+module.exports=router
