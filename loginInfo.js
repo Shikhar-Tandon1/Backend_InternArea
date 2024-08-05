@@ -1,27 +1,47 @@
+const { MongoClient } = require('mongodb');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const axios = require('axios');
-const { db } = require('./firebaseAdmin');
+
+const uri = DATABASEURL; 
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const connect = async () => {
+  await client.connect();
+  console.log('Connected to MongoDB');
+};
+
+const db = client.db('test'); 
+const loginHistoryCollection = db.collection('loginHistory');
+
+const admin = require('./firebaseAdmin');
 const app = express();
+const port = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
+
+connect();
+
 app.post('/login', async (req, res) => {
   const { userId, systemInfo } = req.body;
+
 
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   
   try {
 
-    const loginRef = db.collection('loginHistory').doc(userId);
     const loginData = {
       systemInfo,
       ip,
       timestamp: new Date()
     };
-    await loginRef.collection('entries').add(loginData);
+    await loginHistoryCollection.updateOne(
+      { userId },
+      { $push: { entries: loginData } },
+      { upsert: true }
+    );
 
     res.status(200).json({ message: 'Login recorded', loginData });
   } catch (error) {
@@ -33,16 +53,15 @@ app.get('/login-history/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const loginRef = db.collection('loginHistory').doc(userId);
-    const snapshot = await loginRef.collection('entries').get();
-    const history = snapshot.docs.map(doc => doc.data());
+    const userHistory = await loginHistoryCollection.findOne({ userId });
+    const history = userHistory ? userHistory.entries : [];
     
     res.status(200).json({ history });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching login history', error });
   }
 });
-const url=DATABASE
-app.listen(url, () => {
+
+app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
