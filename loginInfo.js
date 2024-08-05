@@ -2,8 +2,8 @@ const { MongoClient } = require('mongodb');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
-const uri = DATABASEURL; 
+DATABASE=process.env.DATABASEURL
+const uri = DATABASE; 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const connect = async () => {
