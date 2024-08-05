@@ -12,7 +12,7 @@ const connect = async () => {
 };
 
 const db = client.db('test'); 
-const loginHistoryCollection = db.collection('loginHistory');
+const loginHistoryCollection = db.collection('login');
 
 const admin = require('./firebaseAdmin');
 const app = express();
