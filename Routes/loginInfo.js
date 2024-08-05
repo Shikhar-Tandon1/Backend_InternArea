@@ -1,6 +1,6 @@
 const express =require("express")
 const router= express.Router();
-const login= require("../Model/Login");
+const login= require("../Model/login");
 
 router.post("/",async (req,res)=>{
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;

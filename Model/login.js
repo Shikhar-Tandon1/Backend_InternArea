@@ -6,4 +6,4 @@ const LoginShcema=new mongoose.Schema({
     ip: Number,
     
 })
-module.exports=mongoose.model("Login",LoginShcema)
+module.exports=mongoose.model("login",LoginShcema)
